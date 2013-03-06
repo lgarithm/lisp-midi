@@ -94,7 +94,7 @@
 
 (defun read-midi-raw-trunk (in)
   (let* ((magic (read-ascii-string in 4))
-         (length (read-uint in 2))
+         (length (read-uint-n in 4))
          (data (read-raw-bytes in length)))
     `(:magic ,magic :length ,length :data ,data)))
 

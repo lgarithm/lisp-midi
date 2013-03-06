@@ -2,12 +2,10 @@
 ;;; generic util
 
 (defun replicate (n exp)
-  (labels ((rec (acc n)
-                (if (= 0 n)
-                    (reverse acc)
-                  (rec (cons (funcall exp) acc)
-                       (- n 1)))))
-          (rec '() n)))
+  (let ((lst (make-array n)))
+    (dotimes (i n)
+      (setf (elt lst i) (funcall exp)))
+    (coerce lst 'list)))
 
 (defun with-f-reduce-map (f lst)
   (reduce #'(lambda (x y) (concatenate 'vector x y))
