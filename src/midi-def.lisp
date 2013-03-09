@@ -20,6 +20,11 @@
         :set-tempo '(:type 81 :length 3)
         :time-signature '(:type 88 :length 4)))
 
+(defparameter *music-instrument-number*
+  (list :piano 0
+        :guitar 24
+        :violin 40))
+
 ;;; event constructors
 (defmacro make-note-on (&rest body)
   `(list ,@body))
@@ -27,8 +32,13 @@
 (defmacro make-note-off (&rest body)
   `(list ,@body))
 
-(defmacro make-program-change (&rest body)
-  `(list ,@body))
+(defun make-program-change (instrument)
+	; (format t "in is ~a" instrument)
+  (let ((ins-num (getf *music-instrument-number* instrument)))
+	 ; (format t "in is ~a" ins-num)
+    (assert ins-num)
+    (list :type :program-change
+	  :program-number ins-num)))
 
 (defmacro make-end-of-track ()
   `(list :type :end-of-track
@@ -41,11 +51,6 @@
 (defmacro make-time-signature (a b c d)
   `(list :type :time-signature
          :bytes ,(vector a b c d)))
-
-(defparameter *music-instrument-number*
-  (list :piano 0
-        :guitar 24
-        :violin 40))
 
 ;;; constant definitions
 (defparameter *default-scale-pitch*

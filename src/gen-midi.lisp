@@ -12,6 +12,7 @@
         :interval (/ 1 1)))
 
 (defun note-char-to-num (note-char)
+  (assert (member-p note-char '(#\1 #\2 #\3 #\4 #\5 #\6 #\7)))
   (- (char-code note-char)
      (char-code #\0)))
 
@@ -25,36 +26,36 @@
         :interval (getf music-note :interval-rate)))
 
 (defun simple-music-note-to-midi-note (music-note)
-  (music-note-to-midi-note music-note 
-                           :C
-                           *major-note-offset*))
+  (music-note-to-midi-note 
+   music-note :C *major-note-offset*))
 
 (defun note-to-events (note)
-  (vector (make-note-on :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
-                        :type :note-on
-                        :channel 0
-                        :pitch (getf note :pitch)
-                        :velocity *def-on-velo*)
-          (make-note-off :delta-time (beat-to-tpqn (getf note :interval))
-                         :type :note-off
-                         :channel 0
-                         :pitch (getf note :pitch)
-                         :velocity *def-off-velo*)))
+  `#(,(make-note-on :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
+                    :type :note-on
+                    :channel 0
+                    :pitch (getf note :pitch)
+                    :velocity *def-on-velo*)
+     ,(make-note-off :delta-time (beat-to-tpqn (getf note :interval))
+                     :type :note-off
+                     :channel 0
+                     :pitch (getf note :pitch)
+                     :velocity *def-off-velo*)))
 
 ;;; event to binary functions
 (defun ctrl-event-to-bytes (event)
-  (let ((delta-time (getf event :delta-time))
+  (let ((delta-time (or (getf event :delta-time) 0))
         (type (getf event :type))
-        (channel (getf event :channel)))
-    (assert (some (lambda (x) (eql x type)) '(:note-on :note-off)))
+        (channel (or (getf event :channel) 0)))
+    (assert (member-p type '(:note-on :note-off :program-change)))
     (concatenate 'vector
                  (varlen-to-bytes delta-time)
                  (vector (+ channel (* #x10 (getf *ctrl-events* type))))
                  (case type
-                       ((:note-on) (vector (getf event :pitch)
-                                           (getf event :velocity)))
-                       ((:note-off) (vector (getf event :pitch)
-                                            (getf event :velocity)))))))
+                       ((:note-on) `#(,(getf event :pitch)
+                                      ,(getf event :velocity)))
+                       ((:note-off) `#(,(getf event :pitch)
+                                       ,(getf event :velocity)))
+                       ((:program-change) `#(,(getf event :program-number)))))))
 
 (defun sysex-event-to-bytes (event)
   (assert nil)
@@ -91,18 +92,18 @@
                  track-bytes)))
 
 ;;; sequence to events function
-(defun add-end-of-track-event (events)
-  (concatenate 'vector events (vector (make-end-of-track))))
-
 (defun gen-sound-track (seq)
-  (add-end-of-track-event
-   (with-f-reduce-map #'note-to-events seq)))
+  (concatenate 
+   'list
+   (vector (make-program-change :piano))
+   (with-f-reduce-map #'note-to-events seq)
+   (vector (make-end-of-track))))
 
 (defun gen-def-ctrl-track ()
-  (add-end-of-track-event
-   (list (make-set-tempo *MPQN*)
-         ;; numer (log denom/log2) metro 32nds
-         (make-time-signature #x04 #x02 #x02 #x08))))
+  `(,(make-set-tempo *MPQN*)
+    ;; numer (log denom/log2) metro 32nds
+    ,(make-time-signature #x04 #x02 #x02 #x08)
+    ,(make-end-of-track)))
 
 ;;; gen chunk from track
 (defun head-to-chunk (format n-track division)
