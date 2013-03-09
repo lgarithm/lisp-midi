@@ -33,71 +33,54 @@
   `#(,(make-note-on :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
                     :type :note-on
                     :channel 0
-                    :pitch (getf note :pitch)
+                    :note-number (getf note :pitch)
                     :velocity *def-on-velo*)
      ,(make-note-off :delta-time (beat-to-tpqn (getf note :interval))
                      :type :note-off
                      :channel 0
-                     :pitch (getf note :pitch)
+                     :note-number (getf note :pitch)
                      :velocity *def-off-velo*)))
 
 ;;; event to binary functions
 (defun ctrl-event-to-bytes (event)
-  (let ((delta-time (or (getf event :delta-time) 0))
-        (type (getf event :type))
-        (channel (or (getf event :channel) 0)))
-    (assert (member-p type '(:note-on :note-off :program-change)))
-    (concatenate 'vector
-                 (varlen-to-bytes delta-time)
-                 (vector (+ channel (* #x10 (getf *ctrl-events* type))))
-                 (case type
-                       ((:note-on) `#(,(getf event :pitch)
-                                      ,(getf event :velocity)))
-                       ((:note-off) `#(,(getf event :pitch)
-                                       ,(getf event :velocity)))
-                       ((:program-change) `#(,(getf event :program-number)))))))
+  (let ((type (getf event :type)))
+    (assert (member-p type *ctrl-events*))
+    `(,@(varlen-to-bytes (or (getf event :delta-time) 0))
+      ,(+ (or (getf event :channel) 0) 
+          (* #x10 (getf *ctrl-event-code* type)))
+      ,@(mapcar #'(lambda (p) (getf event p))
+                (getf *ctrl-event-params* type)))))
 
 (defun sysex-event-to-bytes (event)
   (assert nil)
   nil)
 
 (defun meta-event-to-bytes (event)
-  (let* ((delta-time (or (getf event :delta-time) 0))
-         (meta-type (getf event :type))
-         (meta-bytes (getf event :bytes))
-         (meta-length (length meta-bytes))
-         (meta-def (getf  *meta-events* meta-type)))
-    (assert meta-def)
-    (assert (= meta-length (getf meta-def :length)))
-    (concatenate 'vector
-                 (varlen-to-bytes delta-time)
-                 (vector #xFF (getf meta-def :type))
-                 (varlen-to-bytes meta-length)
-                 meta-bytes)))
+  (let ((meta-bytes (getf event :bytes)))
+    `(,@(varlen-to-bytes (or (getf event :delta-time) 0))
+      #xFF ,(getf *meta-event-code* (getf event :type))
+      ,@(varlen-to-bytes (length meta-bytes))
+      ,@(coerce meta-bytes 'list))))
 
 (defun event-to-bytes (event)
   (let ((type (getf event :type)))
-    (cond ((getf *ctrl-events* type) (ctrl-event-to-bytes event))
-          ((getf *meta-events* type) (meta-event-to-bytes event))
-          ((getf *sysex-events* type) (sysex-event-to-bytes event)))))
+    (cond ((member-p type *ctrl-events*) (ctrl-event-to-bytes event))
+          ((member-p type *meta-events*) (meta-event-to-bytes event))
+          ((member-p type *sysex-events*) (sysex-event-to-bytes event)))))
 
 ;;; chunk to bytes function
 (defun chunk-to-bytes (chunk)
-  (let* ((magic-bytes (map 'vector #'char-code (getf chunk :magic)))
-         (track-bytes (getf chunk :bytes))
-         (track-length (length track-bytes)))
+  (let ((track-bytes (getf chunk :bytes)))
     (concatenate 'vector
-                 magic-bytes
-                 (make-n-bytes 4 track-length)
+                 (map 'vector #'char-code (getf chunk :magic))
+                 (make-n-bytes 4 (length track-bytes))
                  track-bytes)))
 
 ;;; sequence to events function
 (defun gen-sound-track (seq)
-  (concatenate 
-   'list
-   (vector (make-program-change :piano))
-   (with-f-reduce-map #'note-to-events seq)
-   (vector (make-end-of-track))))
+  `(,(make-program-change :acoustic-grand-piano)
+    ,@(coerce (with-f-reduce-map #'note-to-events seq) 'list)
+    ,(make-end-of-track)))
 
 (defun gen-def-ctrl-track ()
   `(,(make-set-tempo *MPQN*)
@@ -125,3 +108,4 @@
 (defun gen-midi-file-bytes (seqs)
   (with-f-reduce-map #'chunk-to-bytes
                      (gen-midi-file-chunks seqs)))
+

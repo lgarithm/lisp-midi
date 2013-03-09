@@ -9,7 +9,7 @@
   (format t "test-eq-with ~a ~a ~a~%" op expr expect)
   (let ((val (eval expr)))
     (if (funcall op val expect)
-	(prog1 t (format t "OK~%"))
+        (prog1 t (format t "OK~%"))
       (prog1 nil (format t "FAIL ~a EVALS-TO ~a~%" expr val)))))
 
 (defun test-eq (expr expect)
@@ -17,6 +17,8 @@
 
 (setf deps '("base.lisp"
              "midi-def.lisp"
+             "midi-events.lisp"
+             "midi-const.lisp"
              "show-midi.lisp"
              "gen-midi.lisp"
              "parse-mdl.lisp"))

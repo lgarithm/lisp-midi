@@ -1,29 +1,4 @@
 
-;;; events definitions
-(defparameter *ctrl-events*
-  (list :note-off #x8
-        :note-on #x9
-        :note-aftertouch #xA
-        :controller #xB
-        :program-change #xC
-        :channal-aftertouch #xD
-        :pitch-bend #xE))
-
-(defparameter *sysex-events*
-  (list :normal
-        :divided-0 ;
-        :divided-1 ; last one
-        :authorization))
-
-(defparameter *meta-events*
-  (list :end-of-track '(:type 47 :length 0)
-        :set-tempo '(:type 81 :length 3)
-        :time-signature '(:type 88 :length 4)))
-
-(defparameter *music-instrument-number*
-  (list :piano 0
-        :guitar 24
-        :violin 40))
 
 ;;; event constructors
 (defmacro make-note-on (&rest body)
@@ -33,9 +8,7 @@
   `(list ,@body))
 
 (defun make-program-change (instrument)
-	; (format t "in is ~a" instrument)
-  (let ((ins-num (getf *music-instrument-number* instrument)))
-	 ; (format t "in is ~a" ins-num)
+  (let ((ins-num (getf *instrument-number* instrument)))
     (assert ins-num)
     (list :type :program-change
 	  :program-number ins-num)))

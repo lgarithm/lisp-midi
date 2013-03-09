@@ -1,15 +1,17 @@
 
 (defparameter *lib-path* "src")
-(defparameter deps '("base.lisp"
-		     "midi-def.lisp"
-		     "show-midi.lisp"
-		     "gen-midi.lisp"
-		     "parse-mdl.lisp"))
+(setf deps '("base.lisp"
+             "midi-def.lisp"
+             "midi-events.lisp"
+             "midi-const.lisp"
+             "show-midi.lisp"
+             "gen-midi.lisp"
+             "parse-mdl.lisp"))
 
 (defun load-all (files)
-  (mapcar #'(lambda (file) 
+  (mapcar #'(lambda (file)
 	      (format t "loading ~a/~a~%" *lib-path* file)
-	      (load (concatenate 'string *lib-path* "/" file))) 
+	      (load (concatenate 'string *lib-path* "/" file)))
 	  files))
 
 
