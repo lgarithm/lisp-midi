@@ -29,7 +29,7 @@
         :note-aftertouch '(:note-number :aftertouch-value)
         :controller '(:controller-number :controller-value)
         :program-change '(:program-number)
-        :channel-after-touch '(:aftertouch-value)
+        :channel-aftertouch '(:aftertouch-value)
         :pitch-bend '(:pitch-value-lsb :pitch-value-msb)))
 
 ;;; midi meta events
