@@ -1,18 +1,9 @@
 
+;;;;
+;;;; default values
+;;;;
 
 ;;; event constructors
-(defmacro make-note-on (&rest body)
-  `(list ,@body))
-
-(defmacro make-note-off (&rest body)
-  `(list ,@body))
-
-(defun make-program-change (instrument)
-  (let ((ins-num (getf *instrument-number* instrument)))
-    (assert ins-num)
-    (list :type :program-change
-	  :program-number ins-num)))
-
 (defmacro make-end-of-track ()
   `(list :type :end-of-track
          :bytes #()))
@@ -40,12 +31,6 @@
         :A# 70 :Bb 70
         :B 71))
 
-;;; 0 1 2 3 4 5 6 7 8 9 10 11
-;;; C   D   E F   G   A    B
-(defparameter *major-note-offset*
-  (pairlis '(1 2 3 4 5 6 7)
-           '(0 2 4 5 7 9 11)))
-
 (defparameter *microseconds-per-minute* 60000000)
 ; (defparameter *BPM* 120)
 (defparameter *BPM* 56)
@@ -62,8 +47,8 @@
 (defparameter *def-off-velo* #x0)
 
 ;;; mdl definitions
-
-(defparameter *default-num-pitch* #(60 62 64 65 67 69 71))
+(defparameter *default-num-pitch* 
+  #(60 62 64 65 67 69 71))
 
 (defparameter *interval-ctrl-chars* "[]_^")
 (defparameter *pitch-ctrl-chars* "<>-+!?b#")

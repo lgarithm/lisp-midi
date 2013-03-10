@@ -1,4 +1,16 @@
 
+;;;;
+;;;; generate midi file
+;;;;
+
+(defun make-ctrl-event (type &rest body)
+  (alist-to-plist
+   `(,`(:delta-time . ,(or (getf body :delta-time) 0))
+     ,`(:type . ,type)
+     ,`(:channel . ,(or (getf body :channel) 0))
+     ,@(mapcar #'(lambda (p) (cons p (getf body p)))
+               (getf *ctrl-event-params* type)))))
+
 ;;; pitch is determined by
 ;;; :note 1 2 3 4 5 6 7
 ;;; :clef
@@ -30,16 +42,14 @@
    music-note :C *major-note-offset*))
 
 (defun note-to-events (note)
-  `#(,(make-note-on :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
-                    :type :note-on
-                    :channel 0
-                    :note-number (getf note :pitch)
-                    :velocity *def-on-velo*)
-     ,(make-note-off :delta-time (beat-to-tpqn (getf note :interval))
-                     :type :note-off
-                     :channel 0
-                     :note-number (getf note :pitch)
-                     :velocity *def-off-velo*)))
+  `#(,(make-ctrl-event :note-on 
+                       :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
+                       :note-number (getf note :pitch)
+                       :velocity *def-on-velo*)
+     ,(make-ctrl-event :note-off 
+                       :delta-time (beat-to-tpqn (getf note :interval))
+                       :note-number (getf note :pitch)
+                       :velocity *def-off-velo*)))
 
 ;;; event to binary functions
 (defun ctrl-event-to-bytes (event)
@@ -78,7 +88,8 @@
 
 ;;; sequence to events function
 (defun gen-sound-track (seq)
-  `(,(make-program-change :acoustic-grand-piano)
+  `(,(make-ctrl-event :program-change
+                      :program-number (getf *instrument-number* :acoustic-grand-piano))
     ,@(coerce (with-f-reduce-map #'note-to-events seq) 'list)
     ,(make-end-of-track)))
 
@@ -90,13 +101,13 @@
 
 ;;; gen chunk from track
 (defun head-to-chunk (format n-track division)
-  (list :magic "MThd"
-        :bytes (with-f-reduce-map #'(lambda (x) (make-n-bytes 2 x))
-                                  (vector format n-track division))))
+  `(:magic "MThd" :bytes 
+           ,(with-f-reduce-map #'(lambda (x) (make-n-bytes 2 x))
+                               (vector format n-track division))))
 
 (defun track-to-chunk (track)
-  (list :magic "MTrk"
-        :bytes (with-f-reduce-map #'event-to-bytes track)))
+  `(:magic "MTrk" :bytes 
+           ,(with-f-reduce-map #'event-to-bytes track)))
 
 ;;; gen midi file function
 (defun gen-midi-file-chunks (seqs)

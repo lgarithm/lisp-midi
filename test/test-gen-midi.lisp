@@ -1,4 +1,17 @@
 
+(test '(make-ctrl-event :note-off
+			:delta-time (beat-to-tpqn 1)
+			:channel 0
+			:note-number 60
+			:velocity 100))
+
+(test '(funcall #'event-to-bytes
+		(make-ctrl-event :note-off
+				 :delta-time (beat-to-tpqn 1)
+				 :channel 0
+				 :note-number 60
+				 :velocity 100)))
+
 (setf melody '(1 2 3 4 5 6 7))
 
 (test '(mapcar #'simple-number-to-note melody))

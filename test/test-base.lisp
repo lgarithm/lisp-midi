@@ -18,3 +18,13 @@
 (test-with-op #'equalp '(make-n-bytes 3 256) #(0 1 0))
 (test-with-op #'equalp '(make-n-bytes 2 257) #(1 1))
 (test-with-op #'equalp '(make-n-bytes 3 257) #(0 1 1))
+
+
+(test-with-op #'equalp 
+              '(plist-to-alist '(:a 1 :b 2))
+              '((:a . 1) (:b . 2)))
+
+(test-with-op #'equalp 
+              '(alist-to-plist '((1 . 2) (3 . 4)))
+              '(1 2 3 4))
+

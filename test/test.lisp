@@ -2,15 +2,15 @@
 (defparameter *lib-path* "src")
 
 (defun test (expr)
-  (format t "test ~a~%" expr)
-  (format t "EVALS-TO: ~a~%" (eval expr)))
+  (format t "test ~s~%" expr)
+  (format t "EVALS-TO: ~s~%" (eval expr)))
 
 (defun test-with-op (op expr expect)
-  (format t "test-eq-with ~a ~a ~a~%" op expr expect)
+  (format t "test-eq-with ~s ~s ~s~%" op expr expect)
   (let ((val (eval expr)))
     (if (funcall op val expect)
         (prog1 t (format t "OK~%"))
-      (prog1 nil (format t "FAIL ~a EVALS-TO ~a~%" expr val)))))
+      (prog1 nil (format t "FAIL ~s EVALS-TO ~s~%" expr val)))))
 
 (defun test-eq (expr expect)
   (test-with-op #'eq expr expect))
@@ -19,6 +19,7 @@
              "midi-def.lisp"
              "midi-events.lisp"
              "midi-const.lisp"
+             "music-const.lisp"
              "show-midi.lisp"
              "gen-midi.lisp"
              "parse-mdl.lisp"))

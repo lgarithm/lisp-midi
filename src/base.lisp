@@ -136,3 +136,23 @@
                               (let ((next (take-one-sub '())))
                                 (take-all-subs (cons next acc))))))
             (remove-if #'null (take-all-subs '())))))
+
+
+(defun alist-to-plist (alist)
+  (labels ((rec (acc res)
+                (if (null res)
+                    (reverse acc)
+                  (rec (cons (cdar res)
+                             (cons (caar res) acc))
+                       (cdr res)))))
+          (rec '() alist)))
+
+(defun plist-to-alist (plist)
+  (labels ((rec (acc res)
+                (if (null res)
+                    (reverse acc)
+                  (rec (cons (cons (car res) 
+                                   (cadr res))
+                             acc)
+                       (cddr res)))))
+          (rec '() plist)))
