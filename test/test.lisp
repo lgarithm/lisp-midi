@@ -19,6 +19,7 @@
              "midi-def.lisp"
              "midi-events.lisp"
              "midi-const.lisp"
+             "mdl-const.lisp"
              "music-const.lisp"
              "show-midi.lisp"
              "gen-midi.lisp"
