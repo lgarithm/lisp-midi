@@ -1,5 +1,4 @@
 
-(defparameter *lib-path* "src")
 
 (defun test (expr)
   (format t "test ~s~%" expr)
@@ -15,20 +14,7 @@
 (defun test-eq (expr expect)
   (test-with-op #'eq expr expect))
 
-(setf deps '("base.lisp"
-             "midi-def.lisp"
-             "midi-events.lisp"
-             "midi-const.lisp"
-             "mdl-const.lisp"
-             "music-const.lisp"
-             "show-midi.lisp"
-             "gen-midi.lisp"
-             "parse-mdl.lisp"))
-
-(mapcar #'(lambda (file) 
-            (format t "loading ~a/~a~%" *lib-path* file)
-            (load (concatenate 'string *lib-path* "/" file))) 
-        deps)
+(load "src/init.lisp")
 
 (format t "~%~a~%" "test base")
 (load "test/test-base.lisp")
