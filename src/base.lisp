@@ -21,6 +21,14 @@
                     :initial-value (apply fn1 args))))
     #'identity))
 
+(defun chaincall (&rest expr)
+  (funcall (apply #'compose (butlast expr))
+           (car (last expr))))
+
+(defun tie1st (fun arg)
+  (lambda (&rest rest)
+    (apply fun arg rest)))
+
 (defun member-p (ele st)
   (some #'(lambda (x) (eq ele x)) st))
 
@@ -60,7 +68,7 @@
 ;;; file I/O functions
 
 (defun get-all-file-lines-joined (file)
-  (with-open-file 
+  (with-open-file
    (input file)
    (labels ((rec (acc)
                  (let ((line (read-line input nil)))
@@ -151,7 +159,7 @@
   (labels ((rec (acc res)
                 (if (null res)
                     (reverse acc)
-                  (rec (cons (cons (car res) 
+                  (rec (cons (cons (car res)
                                    (cadr res))
                              acc)
                        (cddr res)))))
