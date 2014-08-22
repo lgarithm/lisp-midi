@@ -13,5 +13,4 @@
 		       :if-exists :supersede
 		       :element-type '(unsigned-byte 8))
 		  (with-standard-io-syntax
-		   (write-byte-sequence bytes out))))
-
+		   (write-sequence bytes out))))
