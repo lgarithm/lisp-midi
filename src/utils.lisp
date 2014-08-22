@@ -1,5 +1,6 @@
 
-;;; generic util
+
+;;; generic functions
 
 (defun replicate (n exp)
   (let ((lst (make-array n)))
@@ -37,7 +38,8 @@
            #'(lambda (x) (list x 0))
            (coerce chars 'list)) 'list))
 
-;;; binary functions
+
+;;; binary operation functions
 
 (defun make-uint (lst)
   (reduce #'(lambda (x y) (+ (* 256 x) y)) lst :initial-value 0))
@@ -65,6 +67,7 @@
 (defun read-uint-n (in n)
   (make-uint (replicate n #'(lambda () (read-byte in)))))
 
+
 ;;; file I/O functions
 
 (defun get-all-file-lines-joined (file)
@@ -76,14 +79,15 @@
                      (eval `(concatenate 'string ,@(reverse acc)))))))
            (rec '()))))
 
+
 ;;; my stream ADT functions
 
 (defun make-my-stream (lst)
   (let ((lst (coerce lst 'list)))
     (list (lambda ()
-            (setf first (car lst))
-            (setf lst (cdr lst))
-            first)
+	    (let ((first (car lst)))
+	      (setf lst (cdr lst))
+	      first))
           (lambda () (null lst))
           (lambda () (car lst)))))
 
@@ -127,6 +131,7 @@
                            (ash number -7))))
             (rec2 (list (car lst)) (cdr lst)))))
 
+
 ;;; list functions
 
 (defun split (sep lst)
@@ -144,7 +149,6 @@
                               (let ((next (take-one-sub '())))
                                 (take-all-subs (cons next acc))))))
             (remove-if #'null (take-all-subs '())))))
-
 
 (defun alist-to-plist (alist)
   (labels ((rec (acc res)

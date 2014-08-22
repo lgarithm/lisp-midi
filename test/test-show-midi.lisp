@@ -10,7 +10,7 @@
 
 
 
-(defvar *file-name* "data/ca.mid")
+(defvar *file-name* "sample/ca.mid")
 (defvar *input* (open *file-name* :element-type '(unsigned-byte 8)))
                                         ;(print (read-midi-file *input*))
 ; (print (read-all-midi-chunks *input*))

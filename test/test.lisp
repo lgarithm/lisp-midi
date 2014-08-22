@@ -16,8 +16,8 @@
 
 (load "src/init.lisp")
 
-(format t "~%~a~%" "test base")
-(load "test/test-base.lisp")
+(format t "~%~a~%" "test utils")
+(load "test/test-utils.lisp")
 
 (format t "~%~a~%" "test show-midi")
 (load "test/test-show-midi.lisp")
