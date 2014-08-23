@@ -4,11 +4,11 @@ lisp-midi
 A midi parser, generator by lisp
 
 To generate example, run
-[code]
+[sh]
 clisp sample/main.lisp
-[/code]
+[/sh]
 
 To run tests,
-[code]
+[sh]
 clisp test/test.lisp
-[/code]
+[/sh]
