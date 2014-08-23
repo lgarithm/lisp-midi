@@ -1,6 +1,14 @@
 lisp-midi
 =========
 
-midi parser, generator by lisp
+A midi parser, generator by lisp
 
-to test, run clisp sample/main.lisp
+To generate example, run
+[code]
+clisp sample/main.lisp
+[/code]
+
+To run tests,
+[code]
+clisp test/test.lisp
+[/code]
