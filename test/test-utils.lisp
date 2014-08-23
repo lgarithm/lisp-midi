@@ -10,8 +10,8 @@
   (test-eq (read-my-stream stream) 5)
   (test-eq (empty-my-stream-p stream) t))
 
-(test-eq '(member-p #\s "123123") nil)
-(test-eq '(member-p #\s "123s123") t)
+(test-eq (member-p #\s "123123") nil)
+(test-eq (member-p #\s "123s123") t)
 
 (test-with-op #'equalp '(make-init-table "abcd") '(#\a 0 #\b 0 #\c 0 #\d 0))
 

@@ -10,7 +10,7 @@
                        "midi-const.lisp"
                        "mdl-const.lisp"
                        "music-const.lisp"
-                       "show-midi.lisp"
+                       "parse-midi.lisp"
                        "gen-midi.lisp"
                        "parse-mdl.lisp"))
 

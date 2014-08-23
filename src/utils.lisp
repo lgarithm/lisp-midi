@@ -67,12 +67,24 @@
 (defun read-uint-n (in n)
   (make-uint (replicate n #'(lambda () (read-byte in)))))
 
+(defun load-raw-bytes (file-name)
+  (with-open-file (in file-name
+		      :element-type '(unsigned-byte 8))
+		  (read-raw-bytes in (file-length in))))
+
+(defun write-raw-bytes-to-file (file-name bytes)
+  (with-open-file (out file-name
+                       :direction :output
+                       :if-exists :supersede
+                       :element-type '(unsigned-byte 8))
+                  (with-standard-io-syntax
+                   (write-sequence bytes out))))
 
 ;;; file I/O functions
 
-(defun get-all-file-lines-joined (file)
+(defun get-all-file-lines-joined (file-name)
   (with-open-file
-   (input file)
+   (input file-name)
    (labels ((rec (acc)
                  (let ((line (read-line input nil)))
                    (if line (rec (cons line acc))
