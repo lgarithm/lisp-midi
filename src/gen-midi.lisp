@@ -31,22 +31,22 @@
 (defun music-note-to-midi-note (music-note scale major)
   (list :delta-time (getf music-note :delta-time)
         :pitch (+ (getf *default-scale-pitch* scale)
-                  (cdr (assoc (note-char-to-num 
-                               (getf music-note :note-char)) 
+                  (cdr (assoc (note-char-to-num
+                               (getf music-note :note-char))
                               major))
                   (getf music-note :pitch-shift))
         :interval (getf music-note :interval-rate)))
 
 (defun simple-music-note-to-midi-note (music-note)
-  (music-note-to-midi-note 
+  (music-note-to-midi-note
    music-note :C *major-note-offset*))
 
 (defun note-to-events (note)
-  `#(,(make-ctrl-event :note-on 
+  `#(,(make-ctrl-event :note-on
                        :delta-time (beat-to-tpqn (or (getf note :delta-time) 0))
                        :note-number (getf note :pitch)
                        :velocity *def-on-velo*)
-     ,(make-ctrl-event :note-off 
+     ,(make-ctrl-event :note-off
                        :delta-time (beat-to-tpqn (getf note :interval))
                        :note-number (getf note :pitch)
                        :velocity *def-off-velo*)))
@@ -56,7 +56,7 @@
   (let ((type (getf event :type)))
     (assert (member-p type *ctrl-events*))
     `(,@(varlen-to-bytes (or (getf event :delta-time) 0))
-      ,(+ (or (getf event :channel) 0) 
+      ,(+ (or (getf event :channel) 0)
           (* #x10 (getf *ctrl-event-code* type)))
       ,@(mapcar #'(lambda (p) (getf event p))
                 (getf *ctrl-event-params* type)))))
@@ -101,12 +101,12 @@
 
 ;;; gen chunk from track
 (defun head-to-chunk (format n-track division)
-  `(:magic "MThd" :bytes 
+  `(:magic "MThd" :bytes
            ,(with-f-reduce-map #'(lambda (x) (make-n-bytes 2 x))
                                (vector format n-track division))))
 
 (defun track-to-chunk (track)
-  `(:magic "MTrk" :bytes 
+  `(:magic "MTrk" :bytes
            ,(with-f-reduce-map #'event-to-bytes track)))
 
 ;;; gen midi file function

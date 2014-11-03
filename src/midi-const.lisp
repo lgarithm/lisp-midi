@@ -1,10 +1,10 @@
 
 (defparameter *instrument-number*
-  (list :acoustic-grand-piano 0 
+  (list :acoustic-grand-piano 0
         :bright-acoustic-piano 1
-        :electric-grand-piano 2 
+        :electric-grand-piano 2
         :honky-tonk-piano 3
-        :electric-piano-1 4 
+        :electric-piano-1 4
         :electric-piano-2 5
         :harpsichord 6
         :clavi 7

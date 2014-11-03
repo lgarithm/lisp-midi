@@ -14,8 +14,8 @@
   (labels ((rec (acc sum lst)
                 (if (null lst)
                     (reverse acc)
-                  (rec (cons sum acc) 
-                       (+ sum (car lst)) 
+                  (rec (cons sum acc)
+                       (+ sum (car lst))
                        (cdr lst)))))
           (rec '() 0 lst)))
 
@@ -37,7 +37,7 @@
 
 (defparameter *scale-offsets*
   (alist-to-plist
-   (mapcar #'(lambda (pr) 
+   (mapcar #'(lambda (pr)
                (cons (car pr)
                      (part-sum (cdr pr))))
            (plist-to-alist *scale-intervals*))))

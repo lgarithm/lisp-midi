@@ -1,10 +1,10 @@
 
-;;;; 
+;;;;
 ;;;; music definition language
 ;;;;
 
 ;;; mdl definitions
-(defparameter *default-num-pitch* 
+(defparameter *default-num-pitch*
   #(60 62 64 65 67 69 71))
 
 (defparameter *interval-ctrl-chars* "[]_^")

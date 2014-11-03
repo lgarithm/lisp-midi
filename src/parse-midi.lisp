@@ -16,7 +16,7 @@
   (let* ((type (ldb (byte 4 4) status-byte))
          (channel (ldb (byte 4 0) status-byte))
          (type-argc (assoc type
-                           (pairlis '(#x8 #x9 #xA #xB #xC #xD #xE) 
+                           (pairlis '(#x8 #x9 #xA #xB #xC #xD #xE)
                                     '(2 2 2 2 1 1 2)))))
     (assert type-argc)
     (list :status-byte status-byte
@@ -47,7 +47,7 @@
         (setf status-byte (read-my-stream stream))
       (setf status-byte last-status-byte))
     (assert (= 1 (ldb (byte 1 7) status-byte)))
-    (let ((event 
+    (let ((event
            (cond ((= #xF0 status-byte) (take-sysex-event status-byte stream))
                  ((= #xF7 status-byte) (take-sysex-event status-byte stream))
                  ((= #xFF status-byte) (take-meta-event status-byte stream))
@@ -59,12 +59,12 @@
                 (if (empty-my-stream-p stream)
                     (reverse acc)
                   (let ((event (take-event stream last-status-byte)))
-                    (rec (cons event acc) 
+                    (rec (cons event acc)
                          stream
                          (getf event :status-byte))))))
           (rec '() (make-my-stream data) 0)))
 
-;;; midi block read functions 
+;;; midi block read functions
 (defun read-midi-head-trunk (in)
   (let ((magic (read-ascii-string in 4))
         (length (read-uint-n in 4)))
